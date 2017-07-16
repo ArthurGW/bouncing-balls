@@ -14,13 +14,26 @@ function random(min,max) {
   return num;
 }
 
-function Ball(x, y, velX, velY, colour, size) {
+function Shape(x, y, velX, velY) {
     this.x = x;
     this.y = y;
     this.velX = velX;
     this.velY = velY;
+    this.exists = true;
+}
+
+function Ball(x, y, velX, velY, colour, size) {
+    Shape.call(this, x, y, velX, velY);
     this.colour = colour;
     this.size = size;
+}
+
+Ball.prototype = new Shape;
+
+function EvilCircle(x, y) {
+    Shape.call(this, x, y, 20, 20);
+    this.colour = 'white';
+    this.size = 10;
 }
 
 Ball.prototype.draw = function() {
@@ -59,7 +72,7 @@ Ball.prototype.collisionDetect = function() {
       var distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < this.size + balls[j].size) {
-        balls[j].color = this.color = 'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
+        balls[j].colour = this.colour = balls[j].size > this.size ? balls[j].colour : this.colour;//'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
       }
     }
   }
@@ -86,6 +99,7 @@ function loop() {
   for (var i = 0; i < balls.length; i++) {
     balls[i].draw();
     balls[i].update();
+    balls[i].collisionDetect();
   }
 
   requestAnimationFrame(loop);
