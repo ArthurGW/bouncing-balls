@@ -1,6 +1,7 @@
 // setup canvas
 
 var canvas = document.querySelector('canvas');
+var para = document.querySelector('p';)
 var ctx = canvas.getContext('2d');
 console.log(ctx);
 
@@ -131,12 +132,18 @@ EvilCircle.prototype.collisionDetect = function() {
 
       if (distance < this.size + balls[j].size) {
         balls[j].exists = false;
+        return true;
       }
+
+      
     }
+
+    return false;
   }
 }
 
 var balls = [];
+var num_balls = 25;
 var evil = new EvilCircle(random(0,width), random(0,height));
 evil.setControls();
 
@@ -144,7 +151,7 @@ function loop() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
   ctx.fillRect(0, 0, width, height);
 
-  while (balls.length < 25) {
+  while (balls.length < num_balls) {
     var ball = new Ball(
       random(0,width),
       random(0,height),
@@ -156,6 +163,8 @@ function loop() {
     balls.push(ball);
   }
 
+  para.textContent = "Ball count: " + num_balls;
+
   for (var i = 0; i < balls.length; i++) {
     if (balls[i].exists) {
         balls[i].draw();
@@ -166,7 +175,7 @@ function loop() {
 
   evil.checkBounds();
   evil.draw();
-  evil.collisionDetect();
+  if(evil.collisionDetect()) { num_balls-- };
 
   requestAnimationFrame(loop);
 }
