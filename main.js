@@ -66,7 +66,7 @@ Ball.prototype.collisionDetect = function() {
       var distance = Math.sqrt(dx * dx + dy * dy);
 
       if (distance < this.size + balls[j].size) {
-        balls[j].colour = this.colour = balls[j].size > this.size ? balls[j].colour : this.colour;//'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
+        balls[j].colour = this.colour = 'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')'; //balls[j].size > this.size ? balls[j].colour : this.colour;
       }
     }
   }
@@ -122,7 +122,23 @@ EvilCircle.prototype.setControls = function() {
   }
 }
 
+EvilCircle.prototype.collisionDetect = function() {
+  for (var j = 0; j < balls.length; j++) {
+    if (balls[j].exists) {
+      var dx = this.x - balls[j].x;
+      var dy = this.y - balls[j].y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < this.size + balls[j].size) {
+        balls[j].exists = false;
+      }
+    }
+  }
+}
+
 var balls = [];
+var evil = new EvilCircle(random(0,width), random(0,height));
+evil.setControls();
 
 function loop() {
   ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
@@ -141,10 +157,16 @@ function loop() {
   }
 
   for (var i = 0; i < balls.length; i++) {
-    balls[i].draw();
-    balls[i].update();
-    balls[i].collisionDetect();
+    if (balls[i].exists) {
+        balls[i].draw();
+        balls[i].update();
+        balls[i].collisionDetect();
+    }
   }
+
+  evil.checkBounds();
+  evil.draw();
+  evil.collisionDetect();
 
   requestAnimationFrame(loop);
 }
