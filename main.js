@@ -36,6 +36,8 @@ function EvilCircle(x, y) {
     this.size = 10;
 }
 
+EvilCircle.prototype = new Shape;
+
 Ball.prototype.draw = function() {
     ctx.beginPath();
     ctx.fillStyle = this.colour;
