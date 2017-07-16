@@ -1,8 +1,10 @@
 // setup canvas
 
 var canvas = document.querySelector('canvas');
-var para = document.querySelector('p';)
+var para = document.querySelector('p');
 var ctx = canvas.getContext('2d');
+var num_balls = 2;
+var stopThisMadness = false;
 console.log(ctx);
 
 var width = canvas.width = window.innerWidth;
@@ -13,6 +15,11 @@ var height = canvas.height = window.innerHeight;
 function random(min,max) {
   var num = Math.floor(Math.random()*(max-min)) + min;
   return num;
+}
+
+function end() {
+    para.textContent = "Congratulations! No balls!";
+    stopThisMadness = true;
 }
 
 function Shape(x, y, velX, velY) {
@@ -29,7 +36,8 @@ function Ball(x, y, velX, velY, colour, size) {
     this.size = size;
 }
 
-Ball.prototype = new Shape;
+Ball.prototype = Object.create(Shape.prototype);
+Ball.prototype.constructor = Ball;
 
 Ball.prototype.draw = function() {
     ctx.beginPath();
@@ -61,7 +69,7 @@ Ball.prototype.update = function() {
 
 Ball.prototype.collisionDetect = function() {
   for (var j = 0; j < balls.length; j++) {
-    if (!(this === balls[j])) {
+    if (this.exists && balls[j].exists && !(this === balls[j])) {
       var dx = this.x - balls[j].x;
       var dy = this.y - balls[j].y;
       var distance = Math.sqrt(dx * dx + dy * dy);
@@ -79,7 +87,8 @@ function EvilCircle(x, y) {
     this.size = 10;
 }
 
-EvilCircle.prototype = new Shape;
+EvilCircle.prototype = Object.create(Shape.prototype);
+EvilCircle.prototype.constructor = EvilCircle;
 
 EvilCircle.prototype.draw = function() {
     ctx.beginPath();
@@ -132,18 +141,21 @@ EvilCircle.prototype.collisionDetect = function() {
 
       if (distance < this.size + balls[j].size) {
         balls[j].exists = false;
-        return true;
+        num_balls--;
+
+        if (!num_balls) {
+            end();
+        }
       }
 
       
     }
 
-    return false;
   }
 }
 
 var balls = [];
-var num_balls = 25;
+
 var evil = new EvilCircle(random(0,width), random(0,height));
 evil.setControls();
 
@@ -175,7 +187,17 @@ function loop() {
 
   evil.checkBounds();
   evil.draw();
-  if(evil.collisionDetect()) { num_balls-- };
+  evil.collisionDetect();
+
+  if(stopThisMadness) {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    for (var i = 0; i < 400; i++) {
+        ctx.fillRect(0, 0, width, height);
+        evil.draw();
+    }
+    return;
+
+  }
 
   requestAnimationFrame(loop);
 }
