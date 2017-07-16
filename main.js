@@ -30,14 +30,6 @@ function Ball(x, y, velX, velY, colour, size) {
 
 Ball.prototype = new Shape;
 
-function EvilCircle(x, y) {
-    Shape.call(this, x, y, 20, 20);
-    this.colour = 'white';
-    this.size = 10;
-}
-
-EvilCircle.prototype = new Shape;
-
 Ball.prototype.draw = function() {
     ctx.beginPath();
     ctx.fillStyle = this.colour;
@@ -78,6 +70,41 @@ Ball.prototype.collisionDetect = function() {
       }
     }
   }
+}
+
+function EvilCircle(x, y) {
+    Shape.call(this, x, y, 20, 20);
+    this.colour = 'white';
+    this.size = 10;
+}
+
+EvilCircle.prototype = new Shape;
+
+EvilCircle.prototype.draw = function() {
+    ctx.beginPath();
+    ctx.strokeStyle = this.colour;
+    ctx.lineWidth = 3;
+    ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+    ctx.stroke();
+}
+
+EvilCircle.prototype.checkBounds = function() {
+  if ((this.x + this.size) >= width) {
+    this.x -= this.size;
+  }
+
+  if ((this.x - this.size) <= 0) {
+    this.x += this.size;
+  }
+
+  if ((this.y + this.size) >= height) {
+    this.y -= this.size;
+  }
+
+  if ((this.y - this.size) <= 0) {
+    this.y += this.size;
+  }
+
 }
 
 var balls = [];
