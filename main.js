@@ -4,6 +4,7 @@ var canvas = document.querySelector('canvas');
 var para = document.querySelector('p');
 var ctx = canvas.getContext('2d');
 var num_balls = 2;
+var evilThickness = 4;
 var stopThisMadness = false;
 console.log(ctx);
 
@@ -85,6 +86,7 @@ function EvilCircle(x, y) {
     Shape.call(this, x, y, 20, 20);
     this.colour = 'white';
     this.size = 10;
+    this.realSize = this.size + evilThickness/2;
 }
 
 EvilCircle.prototype = Object.create(Shape.prototype);
@@ -93,26 +95,26 @@ EvilCircle.prototype.constructor = EvilCircle;
 EvilCircle.prototype.draw = function() {
     ctx.beginPath();
     ctx.strokeStyle = this.colour;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = evilThickness;
     ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
     ctx.stroke();
 }
 
 EvilCircle.prototype.checkBounds = function() {
-  if ((this.x + this.size) >= width) {
-    this.x -= this.size;
+  if ((this.x + this.realSize) >= width) {
+    this.x = width - this.realSize;
   }
 
-  if ((this.x - this.size) <= 0) {
-    this.x += this.size;
+  if ((this.x - this.realSize) <= 0) {
+    this.x = this.realSize;
   }
 
-  if ((this.y + this.size) >= height) {
-    this.y -= this.size;
+  if ((this.y + this.realSize) >= height) {
+    this.y = height - this.realSize;
   }
 
-  if ((this.y - this.size) <= 0) {
-    this.y += this.size;
+  if ((this.y - this.realSize) <= 0) {
+    this.y = this.realSize;
   }
 
 }
@@ -128,8 +130,9 @@ EvilCircle.prototype.setControls = function() {
         _this.y -= _this.velY;
         } else if (e.keyCode === 83) {
         _this.y += _this.velY;
+        }
+        _this.checkBounds();
     }
-  }
 }
 
 EvilCircle.prototype.collisionDetect = function() {
@@ -139,7 +142,7 @@ EvilCircle.prototype.collisionDetect = function() {
       var dy = this.y - balls[j].y;
       var distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (distance < this.size + balls[j].size) {
+      if (distance < this.realSize + balls[j].size) {
         balls[j].exists = false;
         num_balls--;
 
@@ -172,6 +175,7 @@ function loop() {
       'rgb(' + random(0,255) + ',' + random(0,255) + ',' + random(0,255) +')',
       random(10,20)
     );
+    ball.draw();
     balls.push(ball);
   }
 
@@ -185,13 +189,13 @@ function loop() {
     }
   }
 
-  evil.checkBounds();
+  //evil.checkBounds();
   evil.draw();
   evil.collisionDetect();
 
   if(stopThisMadness) {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-    for (var i = 0; i < 400; i++) {
+    for (var i = 0; i < 100; i++) {
         ctx.fillRect(0, 0, width, height);
         evil.draw();
     }
