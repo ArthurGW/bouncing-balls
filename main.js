@@ -25,7 +25,7 @@ function Ball(x, y, velX, velY, colour, size) {
 
 Ball.prototype.draw = function() {
     ctx.beginPath();
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = this.colour;
     ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
     ctx.fill();
 }
@@ -49,6 +49,20 @@ Ball.prototype.update = function() {
 
   this.x += this.velX;
   this.y += this.velY;
+}
+
+Ball.prototype.collisionDetect = function() {
+  for (var j = 0; j < balls.length; j++) {
+    if (!(this === balls[j])) {
+      var dx = this.x - balls[j].x;
+      var dy = this.y - balls[j].y;
+      var distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < this.size + balls[j].size) {
+        balls[j].color = this.color = 'rgb(' + random(0, 255) + ',' + random(0, 255) + ',' + random(0, 255) +')';
+      }
+    }
+  }
 }
 
 var balls = [];
@@ -76,3 +90,5 @@ function loop() {
 
   requestAnimationFrame(loop);
 }
+
+loop();
